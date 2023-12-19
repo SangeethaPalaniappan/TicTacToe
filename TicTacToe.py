@@ -1,5 +1,6 @@
 import datetime
 import random
+import time
 class TicTacToe:
     def __init__(self):
         self.player_arr = []
@@ -50,17 +51,17 @@ class TicTacToe:
             self.game_running(player_2, p2_choice, player_2, player_1, NUMBER_2, NUMBER_1, game_arr)
 
     def game_running(self, player, choice, p1, p2, NUMBER_1, NUMBER_2, game_arr):
-        print(choice, "wins the toss")
+        print(player, "wins the toss")
         time =datetime.datetime.now()
         date_time = time.strftime("%c")
         for i in range(5):
-            if self.game_play(player, p1, p2, NUMBER_1, game_arr, date_time) == "break":
+            if self.game_play(p1, p1, p2, NUMBER_1, game_arr, date_time) == "break":
                 break
             if i == 4:
                 self.game_draw_details(p1, p2, date_time)
                 break
 
-            if self.game_play(player, p1, p2, NUMBER_2, game_arr, date_time) == "break":
+            if self.game_play(p2, p1, p2, NUMBER_2, game_arr, date_time) == "break":
                 break
 
     def add_to_game_history(self, player, p1, p2, date_time):
@@ -79,20 +80,43 @@ class TicTacToe:
     def get_input(self, name, number ,game_arr):
         print(name, "It's your turn!")
         while True:
+            start = time.time()
             row    = int(input("Row    : "))
             column = int(input("Column : "))
-            if game_arr[row][column] == -1:
-                game_arr[row][column] = number
-                break
-            else:
-                print("You can't place here")
+            if time.time() - start <= 10:
+                if game_arr[row][column] == -1:
+                    game_arr[row][column] = number
+                    self.print_arr(game_arr)
+                    if self.undo(row, column, game_arr) != None:
+                        continue
+                    else:    
+                        return None
+                else:
+                    print("You can't place here")
 
-    def game_play(self, player, p1, p2, NUMBER, game_arr, date_time):
-        self.get_input(player, NUMBER ,game_arr)
-        self.print_arr(game_arr)
+            else:
+                return "Out of time"                        
+
+               
+
+
+    def game_play(self, player, p1, p2, number, game_arr, date_time):
+        input_func = self.get_input(player, number ,game_arr)
+        if input_func == None:
+            self.print_arr(game_arr) 
         
-        if self.check(NUMBER ,game_arr) == "Win":
-            self.add_to_game_history(p1, p1, p2, date_time)
+            if self.check(number ,game_arr) == "Win":
+                self.add_to_game_history(player, p1, p2, date_time)
+                return "break"
+
+        else:
+            print(input_func)
+            
+            if player == p2:
+                player = p2 
+            else:
+                player = p1    
+            self.add_to_game_history(player, p1, p2, date_time)
             return "break"
 
     def check(self, number ,game_arr):
@@ -158,9 +182,24 @@ class TicTacToe:
             rank += 1
         leader_board_file.close()
 
-    def undo(self):
-        pass
-
+    def undo(self, row, column, game_arr):
+        option = input("Do you want to Undo? (Yes/No) : ")
+        if option == "Yes":
+            game_arr[row][column] = -1
+            self.print_arr(game_arr)
+            return game_arr
+        else:
+            return None
+        
+    def timer(self):
+        start = time.time()
+        print(start)
+        i = 0
+        while time.time() - start <= 10:
+            if int(time.time() - start) == 5 and i == 0:
+                print("5 seconds more")
+                i = 1
+        print("Your opponent have won the match")            
 
 def options(): 
     obj = TicTacToe()   
@@ -181,4 +220,4 @@ def options():
 
 print("\t Tic Tac Toe")
 print("")  
-options()  
+options()

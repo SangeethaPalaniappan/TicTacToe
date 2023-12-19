@@ -1,14 +1,8 @@
-dict = {"Sangee" : 1, "Sabi" : 1, "Thasika" : 3}
-arr = []
-for i in dict.keys():
-    print(dict.get(i))
-    arr.append(dict.get(i))
-print(arr)   
-arr.sort(reverse = True) 
-print(arr)  
-for i in range(len(arr)):
-    val_lis = list(dict.values())
-    index   = val_lis.index(arr[i])
-    key_lis = list(dict.keys())
-    dict[key_lis[index]] = 0
-    arr[i] = 0
+import time
+start = time.time()
+print(start)
+i = 0
+while time.time() - start <= 10:
+    if int(time.time() - start) == 5 and i == 0:
+        print("5 seconds more")
+        i = 1
