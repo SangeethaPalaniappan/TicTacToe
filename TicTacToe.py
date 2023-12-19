@@ -1,65 +1,107 @@
+import datetime
+import random
 class TicTacToe:
     def __init__(self):
-        self.game_arr = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
         self.player_arr = []
-        self.player = open("PlayersDataFile.txt")
-        for details in self.player:
+        player_det = open("PlayersDataFile.txt")
+        for details in player_det:
             self.player_arr.append(details.split(","))
-        self.player.close()    
+        player_det.close()  
 
+
+        self.game_history_arr = []
+        game_hist = open("GameHistory.txt")
+        for history in game_hist:
+            self.game_history_arr.append(history.split(","))
+        game_hist.close()
+
+        
     def add_new_players(self):
         name     = input("Enter your Name   : ")
         number   = int(input("Enter your Number : "))
         email_id = input("Enter your Emali  : ")
-
+        self.player_arr.append([name, number, email_id, "0", "0", "\n"])
         player = open("PlayersDataFile.txt", "a")
-        player.write(name + "," + str(number) + "," + email_id + "," + "0,0" + ",")
+        player.write(name + "," + str(number) + "," + email_id + "," + "0" + "," + "0" + ",")
         player.write("\n")
         player.close()
 
     def play(self):
+        game_arr = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
         print("Player 1")
         player_1 = input("Enter your name : ")
         NUMBER_1 = 1
+        p1_choice = input("Enter your choice(Head/Tail) : ")
         print("Player 2")
         player_2 = input("Enter your name : ")
         NUMBER_2 = 0
-        for i in range(6):
-            print(self.game_arr)
-            self.player(player_1, NUMBER_1)
-            if self.check(NUMBER_1) == "Win":
-                print("Player 1 Wins the game")
-                self.add_points(player_1)
+        p2_choice = "Head"
+        if p1_choice == "Head":
+            p2_choice = "Tail"
+        print(p2_choice)    
+
+        toss_result = random.randint(0, 1)
+        if toss_result == 1:
+            print(p1_choice, "\nPlayer_1 wins the toss")
+            self.game_running(player_1, p1_choice, player_1, player_2, NUMBER_1, NUMBER_2, game_arr)
+            
+        else:
+            print(p2_choice, "\nPlayer_2 wins the toss")
+            self.game_running(player_2, p2_choice, player_2, player_1, NUMBER_2, NUMBER_1, game_arr)
+
+    def game_running(self, player, choice, p1, p2, NUMBER_1, NUMBER_2, game_arr):
+        print(choice, "wins the toss")
+        time =datetime.datetime.now()
+        date_time = time.strftime("%c")
+        for i in range(5):
+            if self.game_play(player, p1, p2, NUMBER_1, game_arr, date_time) == "break":
                 break
-            if i == 5:
-                break
-            self.player(player_2, NUMBER_2)
-            if self.check(NUMBER_2) == "Win":
-                print("Player 2 Wins the game")
-                self.add_points(player_2)
+            if i == 4:
+                self.game_draw_details(p1, p2, date_time)
                 break
 
+            if self.game_play(player, p1, p2, NUMBER_2, game_arr, date_time) == "break":
+                break
 
-    def player(self, name, NUMBER):
+    def add_to_game_history(self, player, p1, p2, date_time):
+        winner = player + " wins the game"
+        print(winner)
+        self.game_history_arr.append([p1, p2, winner, date_time])
+        self.game_history()
+        self.add_points(player)
+
+    def game_draw_details(self, p1, p2, date_time):
+        print("Match Draw")
+        winner = "Match Draw"
+        self.game_history_arr.append([p1, p2, winner, date_time])
+        self.game_history()
+
+    def get_input(self, name, number ,game_arr):
         print(name, "It's your turn!")
         while True:
             row    = int(input("Row    : "))
             column = int(input("Column : "))
-            if self.game_arr[row][column] == -1:
-                self.game_arr[row][column] = NUMBER
+            if game_arr[row][column] == -1:
+                game_arr[row][column] = number
                 break
             else:
                 print("You can't place here")
 
-      
+    def game_play(self, player, p1, p2, NUMBER, game_arr, date_time):
+        self.get_input(player, NUMBER ,game_arr)
+        self.print_arr(game_arr)
+        
+        if self.check(NUMBER ,game_arr) == "Win":
+            self.add_to_game_history(p1, p1, p2, date_time)
+            return "break"
 
-    def check(self, NUMBER):
-        indices = [self.game_arr[0][0], self.game_arr[0][1], self.game_arr[0][2], self.game_arr[1][0], self.game_arr[1][1], self.game_arr[1][2], self.game_arr[2][0], self.game_arr[2][1], self.game_arr[2][2]]
-        if   indices[0] == NUMBER  and ((indices[1] == NUMBER and indices[2] == NUMBER) or (indices[3] == NUMBER and indices[6] == NUMBER) or (indices[4] == NUMBER and indices[8] == NUMBER)):
+    def check(self, number ,game_arr):
+        indices = [game_arr[0][0], game_arr[0][1], game_arr[0][2], game_arr[1][0], game_arr[1][1], game_arr[1][2], game_arr[2][0], game_arr[2][1], game_arr[2][2]]
+        if   indices[0] == number  and ((indices[1] == number and indices[2] == number) or (indices[3] == number and indices[6] == number) or (indices[4] == number and indices[8] == number)):
             return "Win"
-        elif indices[8] == NUMBER  and ((indices[2] == NUMBER and indices[5] == NUMBER) or (indices[6] == NUMBER and indices[7] == NUMBER)):
+        elif indices[8] == number  and ((indices[2] == number and indices[5] == number) or (indices[6] == number and indices[7] == number)):
             return "Win"
-        elif indices[4] == NUMBER  and ((indices[6] == NUMBER and indices[2] == NUMBER) or (indices[1] == NUMBER and indices[7] == NUMBER)):
+        elif indices[4] == number  and ((indices[6] == number and indices[2] == number) or (indices[1] == number and indices[7] == number) or (indices[3] == number and indices[5] == number)):
             return "Win"
         else:
             return "Play"
@@ -67,10 +109,56 @@ class TicTacToe:
     def add_points(self, name):
         for player in self.player_arr:
             if player[0] == name:
-                player[3] += 1
+                player[3] = int(player[3]) + 1
+                self.over_ride_details()
+                break
+                
+    def over_ride_details(self):
+        player = open("PlayersDataFile.txt", "w")
+        for details in self.player_arr:
+            player.write(details[0] + "," + details[1] + "," + details[2] + "," + str(details[3]) + ",0" + ",")
+            player.write("\n")
+        player.close()            
 
 
-    def leader_board():
+    def game_history(self):
+        game_hist = open("GameHistory.txt", "w")
+        for history in self.game_history_arr:
+            game_hist.write(history[0] + "," +  history[1] + "," +  history[2] + "," +  str(history[3] + ",\n"))
+        game_hist.close()
+
+    def print_arr(self ,game_arr):
+        for symbols in game_arr:
+            print(symbols[0] , "\t" , symbols[1] , "\t" , symbols[2] , "\n")
+
+
+    def leader_board(self):
+        players_dict = {}
+        player_det = open("PlayersDataFile.txt")
+        i = 0
+        for details in player_det:
+            players_dict[self.player_arr[i][0]] = int(self.player_arr[i][3])
+            i += 1
+        player_det.close()  
+        print("Name", "\t\t", "Score", "\t", "Rank", "\n") 
+        sorted_val_arr = list(players_dict.values())
+        sorted_val_arr.sort(reverse = True)
+        val_arr = list(players_dict.values())
+        key_arr = list(players_dict.keys())
+        rank = 1
+        leader_board_file = open("LeaderBoardFile.txt", "w")
+        for value in range(len(sorted_val_arr)):
+            index = val_arr.index(sorted_val_arr[value])
+            player = key_arr[index]
+            score = val_arr[index]
+            players_dict[player] = -1
+            val_arr[index] = -1
+            leader_board_file.write(player + " - " + str(score) + " - " + str(rank) +"\n")
+            print(player, "\t", score, "\t", rank)
+            rank += 1
+        leader_board_file.close()
+
+    def undo(self):
         pass
 
 
