@@ -21,14 +21,22 @@ class TicTacToe:
         name     = input("Enter your Name   : ")
         number   = int(input("Enter your Number : "))
         email_id = input("Enter your Emali  : ")
-        self.player_arr.append([name, number, email_id, "0", "0", "\n"])
+        self.player_arr.append([name, number, email_id, "0", "\n"])
         player = open("PlayersDataFile.txt", "a")
-        player.write(name + "," + str(number) + "," + email_id + "," + "0" + "," + "0" + ",")
+        player.write(name + "," + str(number) + "," + email_id + "," + "0" + ",")
         player.write("\n")
         player.close()
 
     def play(self):
-        game_arr = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
+        n = int(input("n : "))
+        game_arr = []   
+        for i in range(n): 
+            game_arr = [list(range(1 + n * i, 1 + n * (i + 1)))] + game_arr
+        for j in range(n):
+            for k in range(n):
+                game_arr[j][k] = -1
+ 
+        self.print_arr(game_arr)        
         print("Player 1")
         player_1 = input("Enter your name : ")
         NUMBER_1 = 1
@@ -54,15 +62,25 @@ class TicTacToe:
         print(player, "wins the toss")
         time =datetime.datetime.now()
         date_time = time.strftime("%c")
-        for i in range(5):
-            if self.game_play(p1, p1, p2, NUMBER_1, game_arr, date_time) == "break":
-                break
-            if i == 4:
-                self.game_draw_details(p1, p2, date_time)
-                break
+        n = len(game_arr) 
+        if n % 2 == 0:
+            for i in range((n ** 2) // 2):
+                if self.game_play(p1, p1, p2, NUMBER_1, game_arr, date_time) == "break":
+                    break
+                
+                if self.game_play(p2, p1, p2, NUMBER_2, game_arr, date_time) == "break":
+                    break
+        elif n % 2 == 1:
+            no_of_iterations = ((n ** 2) // 2) + 1
+            for i in range(no_of_iterations):
+                if self.game_play(p1, p1, p2, NUMBER_1, game_arr, date_time) == "break":
+                    break
+                if i == no_of_iterations - 1:
+                    self.game_draw_details(p1, p2, date_time)
+                    break
 
-            if self.game_play(p2, p1, p2, NUMBER_2, game_arr, date_time) == "break":
-                break
+                if self.game_play(p2, p1, p2, NUMBER_2, game_arr, date_time) == "break":
+                    break        
 
     def add_to_game_history(self, player, p1, p2, date_time):
         winner = player + " wins the game"
@@ -83,6 +101,9 @@ class TicTacToe:
             start = time.time()
             row    = int(input("Row    : "))
             column = int(input("Column : "))
+            if row >= len(game_arr) or column >= len(game_arr):
+                print("Give input within n")
+                continue
             if time.time() - start <= 10:
                 if game_arr[row][column] == -1:
                     game_arr[row][column] = number
@@ -112,7 +133,7 @@ class TicTacToe:
         else:
             print(input_func)
             
-            if player == p2:
+            if player != p2:
                 player = p2 
             else:
                 player = p1    
@@ -120,15 +141,62 @@ class TicTacToe:
             return "break"
 
     def check(self, number ,game_arr):
-        indices = [game_arr[0][0], game_arr[0][1], game_arr[0][2], game_arr[1][0], game_arr[1][1], game_arr[1][2], game_arr[2][0], game_arr[2][1], game_arr[2][2]]
-        if   indices[0] == number  and ((indices[1] == number and indices[2] == number) or (indices[3] == number and indices[6] == number) or (indices[4] == number and indices[8] == number)):
-            return "Win"
-        elif indices[8] == number  and ((indices[2] == number and indices[5] == number) or (indices[6] == number and indices[7] == number)):
-            return "Win"
-        elif indices[4] == number  and ((indices[6] == number and indices[2] == number) or (indices[1] == number and indices[7] == number) or (indices[3] == number and indices[5] == number)):
-            return "Win"
-        else:
-            return "Play"
+        n = len(game_arr)
+        init = 0
+        for i in range(n):
+            if game_arr[i][i] == number: 
+                init = 1
+                
+            else:
+                init = 0
+                break
+        if init == 1:
+            return "Win" 
+        for i in range(n):
+            if init == 1 or init == 0:
+                for j in range(n):
+                    if game_arr[i][j] == number:
+                        init = 1
+                        if j == n - 1:
+                            return "Win"
+                    elif init == 0:
+                        break  
+                    else:
+                        init = 2
+                        break
+            else:
+                init = 0
+                break   
+
+        if init == 1:
+            return "Win"         
+        for i in range(n):
+            if init == 1 or init == 0:
+                for j in range(n):
+                    if game_arr[j][i] == number:
+                        init = 1
+                        if j == n - 1:
+                            return "Win"
+                    elif init == 0:
+                        break   
+                    else:
+                        init = 2
+                        break
+            else:
+                init = 0
+                break        
+
+                     
+        j = n -1
+        for i in range(n):
+            if game_arr[i][j] == number:
+                init = 1
+                j -= 1
+            else:
+                init = 0
+                break    
+        if init == 1:
+            return "Win" 
         
     def add_points(self, name):
         for player in self.player_arr:
@@ -140,7 +208,7 @@ class TicTacToe:
     def over_ride_details(self):
         player = open("PlayersDataFile.txt", "w")
         for details in self.player_arr:
-            player.write(details[0] + "," + details[1] + "," + details[2] + "," + str(details[3]) + ",0" + ",")
+            player.write(details[0] + "," + details[1] + "," + details[2] + "," + str(details[3])  + ",")
             player.write("\n")
         player.close()            
 
@@ -152,8 +220,11 @@ class TicTacToe:
         game_hist.close()
 
     def print_arr(self ,game_arr):
-        for symbols in game_arr:
-            print(symbols[0] , "\t" , symbols[1] , "\t" , symbols[2] , "\n")
+        n = len(game_arr)
+        for i in range(n):
+            for j in range(n):
+                print(game_arr[i][j] , "\t", end = "")
+            print("\n")    
 
 
     def leader_board(self):
