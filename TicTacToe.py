@@ -159,17 +159,12 @@ class TicTacToe:
                         init = 1
                         if j == n - 1:
                             return "Win"
-                    elif init == 0:
+                    elif init == 0  or init == 1:
+                        init = 0
                         break  
-                    else:
-                        init = 2
-                        break
-            else:
-                init = 0
-                break   
+ 
 
-        if init == 1:
-            return "Win"         
+       
         for i in range(n):
             if init == 1 or init == 0:
                 for j in range(n):
@@ -177,14 +172,10 @@ class TicTacToe:
                         init = 1
                         if j == n - 1:
                             return "Win"
-                    elif init == 0:
+                    elif init == 0 or init == 1:
+                        init = 0
                         break   
-                    else:
-                        init = 2
-                        break
-            else:
-                init = 0
-                break        
+    
 
                      
         j = n -1
