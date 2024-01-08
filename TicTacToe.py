@@ -4,14 +4,13 @@ import time
 class TicTacToe:
     def __init__(self):
         self.player_arr = []
-        player_det = open("PlayersDataFile.txt")
+        player_det = open("../TicTacToe/PlayersDataFile.txt")
         for details in player_det:
             self.player_arr.append(details.split(","))
-        player_det.close()  
-
+        player_det.close()
 
         self.game_history_arr = []
-        game_hist = open("GameHistory.txt")
+        game_hist = open("../PycharmProjects/TicTacToe/GameHistory.txt")
         for history in game_hist:
             self.game_history_arr.append(history.split(","))
         game_hist.close()
@@ -22,7 +21,7 @@ class TicTacToe:
         number   = int(input("Enter your Number : "))
         email_id = input("Enter your Emali  : ")
         self.player_arr.append([name, number, email_id, "0", "\n"])
-        player = open("PlayersDataFile.txt", "a")
+        player = open("../PycharmProjects/TicTacToe/PlayersDataFile.txt", "a")
         player.write(name + "," + str(number) + "," + email_id + "," + "0" + ",")
         player.write("\n")
         player.close()
@@ -120,7 +119,6 @@ class TicTacToe:
 
                
 
-
     def game_play(self, player, p1, p2, number, game_arr, date_time):
         input_func = self.get_input(player, number ,game_arr)
         if input_func == None:
@@ -197,7 +195,7 @@ class TicTacToe:
                 break
                 
     def over_ride_details(self):
-        player = open("PlayersDataFile.txt", "w")
+        player = open("../PycharmProjects/TicTacToe/PlayersDataFile.txt", "w")
         for details in self.player_arr:
             player.write(details[0] + "," + details[1] + "," + details[2] + "," + str(details[3])  + ",")
             player.write("\n")
@@ -205,7 +203,7 @@ class TicTacToe:
 
 
     def game_history(self):
-        game_hist = open("GameHistory.txt", "w")
+        game_hist = open("../PycharmProjects/TicTacToe/GameHistory.txt", "w")
         for history in self.game_history_arr:
             game_hist.write(history[0] + "," +  history[1] + "," +  history[2] + "," +  str(history[3] + ",\n"))
         game_hist.close()
@@ -220,7 +218,7 @@ class TicTacToe:
 
     def leader_board(self):
         players_dict = {}
-        player_det = open("PlayersDataFile.txt")
+        player_det = open("../PycharmProjects/TicTacToe/PlayersDataFile.txt")
         i = 0
         for details in player_det:
             players_dict[self.player_arr[i][0]] = int(self.player_arr[i][3])
@@ -232,7 +230,7 @@ class TicTacToe:
         val_arr = list(players_dict.values())
         key_arr = list(players_dict.keys())
         rank = 1
-        leader_board_file = open("LeaderBoardFile.txt", "w")
+        leader_board_file = open("../PycharmProjects/TicTacToe/LeaderBoardFile.txt", "w")
         for value in range(len(sorted_val_arr)):
             index = val_arr.index(sorted_val_arr[value])
             player = key_arr[index]
